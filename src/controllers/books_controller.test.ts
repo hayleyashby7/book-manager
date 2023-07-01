@@ -134,13 +134,17 @@ describe("POST /api/v1/books endpoint", () => {
 	});
 });
 
-describe("DELETE /api/v1/books/{bookId} endpoint", () => { 
+describe("DELETE /api/v1/books/{bookId} endpoint", () => {
+	test("status code successfully 204 for deleting a book", async () => {
+		// Arrange
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(Promise.resolve(1));
 
-	test("status code successfully 204 for deleting a book", async () => { 
 		// Act
-		const res = await request(app).delete("/api/v1/books/1");
+		const res = await request(app).delete("/api/v1/books/2");
 
 		// Assert
 		expect(res.statusCode).toEqual(204);
+		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledWith(2);
+		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
 	});
 });
