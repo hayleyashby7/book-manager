@@ -28,7 +28,7 @@ export const updateBook = async (bookId: number, book: Book) => {
 	});
 
 	if (result[0] === 0) {
-		throw new Error(`Unable to update book ID:${bookId}.`);
+		throw new Error(`Unable to update book ID:${bookId} as it does not exist.`);
 	} else return result;
 };
 

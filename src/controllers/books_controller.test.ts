@@ -228,7 +228,9 @@ describe("PUT /api/v1/books/{bookId} endpoint", () => {
 				"Fantasy tale about succumbing to peer pressure and biting off more than you can chew.",
 		};
 		jest.spyOn(bookService, "updateBook").mockImplementation(() => {
-			throw new Error(`Unable to update book ID:${bookToUpdate.bookId}.`);
+			throw new Error(
+				`Unable to update book ID:${bookToUpdate.bookId} as it does not exist.`
+			);
 		});
 
 		// Act
@@ -237,7 +239,7 @@ describe("PUT /api/v1/books/{bookId} endpoint", () => {
 		// Assert
 		expect(res.statusCode).toEqual(404);
 		expect(res.body).toEqual({
-			message: `Unable to update book ID:${bookToUpdate.bookId}.`,
+			message: `Unable to update book ID:${bookToUpdate.bookId} as it does not exist.`,
 		});
 		expect(jest.spyOn(bookService, "updateBook")).toHaveBeenCalledWith(
 			7,
