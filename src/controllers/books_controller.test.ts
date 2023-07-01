@@ -135,7 +135,7 @@ describe("POST /api/v1/books endpoint", () => {
 });
 
 describe("DELETE /api/v1/books/{bookId} endpoint", () => {
-	test("status code successfully 204 for deleting a book", async () => {
+	test("status code 204 for successfully deleting a book", async () => {
 		// Arrange
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(Promise.resolve(1));
 
