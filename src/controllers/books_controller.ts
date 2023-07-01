@@ -39,15 +39,15 @@ export const deleteBook = async (req: Request, res: Response) => {
 	const bookId = Number.parseInt(req.params.bookId);
 
 	try {
-		performDelete(await bookService.deleteBook(bookId));
+		performDelete(bookId, await bookService.deleteBook(bookId));
 		res.status(204).json();
 	} catch (error) {
 		res.status(404).json({ message: (error as Error).message });
 	}
 };
 
-const performDelete = (numberBooks: number) => {
+const performDelete = (id: number, numberBooks: number) => {
 	if (numberBooks === 0) {
-		throw new Error("Book not found");
+		throw new Error(`Unable to delete book ID:${id} as it does not exist.`);
 	}
 };

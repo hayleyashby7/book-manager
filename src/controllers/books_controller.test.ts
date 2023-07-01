@@ -148,7 +148,7 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
 	});
 
-		test("status code 404 for deleting a book that doesn't exist", async () => {
+	test("status code 404 for deleting a book that doesn't exist", async () => {
 		// Arrange
 		jest.spyOn(bookService, "deleteBook").mockResolvedValue(Promise.resolve(0));
 
@@ -157,6 +157,9 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 
 		// Assert
 		expect(res.statusCode).toEqual(404);
+		expect(res.body).toEqual({
+			message: "Unable to delete book ID:12 as it does not exist.",
+		});
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledWith(12);
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
 	});
