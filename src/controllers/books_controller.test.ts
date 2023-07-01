@@ -109,28 +109,52 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 
 describe("POST /api/v1/books endpoint", () => {
 	test("status code successfully 201 for saving a valid book", async () => {
+		// Arrange
+		const bookToBeSaved = new Book({
+			bookId: 3,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+			description: "A fox is fantastic",
+		});
+
+		jest.spyOn(bookService, "getBook").mockResolvedValue(Promise.resolve(null));
+
+		jest
+			.spyOn(bookService, "saveBook")
+			.mockResolvedValue(Promise.resolve(bookToBeSaved));
+
 		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ bookId: 3, title: "Fantastic Mr. Fox", author: "Roald Dahl" });
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 3,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+			description: "A fox is fantastic",
+		});
 
 		// Assert
 		expect(res.statusCode).toEqual(201);
+		expect(res.body).toEqual(bookToBeSaved.toJSON());
+		expect(jest.spyOn(bookService, "saveBook")).toHaveBeenCalledTimes(1);
 	});
 
-	test("status code 400 when saving ill formatted JSON", async () => {
-		// Arrange - we can enforce throwing an exception by mocking the implementation
+	test("status code 400 when saving book with ID that already exists", async () => {
+		// Arrange
 		jest.spyOn(bookService, "saveBook").mockImplementation(() => {
-			throw new Error("Error saving book");
+			throw new Error("Book ID already exists");
 		});
 
 		// Act
-		const res = await request(app)
-			.post("/api/v1/books")
-			.send({ title: "Fantastic Mr. Fox", author: "Roald Dahl" }); // No bookId
+		const res = await request(app).post("/api/v1/books").send({
+			bookId: 1,
+			title: "Fantastic Mr. Fox",
+			author: "Roald Dahl",
+			description: "A fox is fantastic",
+		});
 
 		// Assert
 		expect(res.statusCode).toEqual(400);
+		expect(res.body).toEqual({ message: "Book ID already exists" });
+		expect(jest.spyOn(bookService, "saveBook")).toHaveBeenCalledTimes(1);
 	});
 });
 
@@ -150,15 +174,20 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 
 	test("status code 404 for deleting a book that doesn't exist", async () => {
 		// Arrange
-		jest.spyOn(bookService, "deleteBook").mockResolvedValue(Promise.resolve(0));
+		const bookID = "12";
+		jest.spyOn(bookService, "deleteBook").mockImplementation(() => {
+			throw new Error(
+				`Unable to delete book ID:${bookID} as it does not exist.`
+			);
+		});
 
 		// Act
-		const res = await request(app).delete("/api/v1/books/12");
+		const res = await request(app).delete(`/api/v1/books/${bookID}`);
 
 		// Assert
 		expect(res.statusCode).toEqual(404);
 		expect(res.body).toEqual({
-			message: "Unable to delete book ID:12 as it does not exist.",
+			message: `Unable to delete book ID:${bookID} as it does not exist.`,
 		});
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledWith(12);
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
