@@ -27,11 +27,15 @@ export const saveBook = async (req: Request, res: Response) => {
 };
 
 export const updateBook = async (req: Request, res: Response) => {
-	const bookUpdateData = req.body;
-	const bookId = Number.parseInt(req.params.bookId);
+	try {
+		const bookUpdateData = req.body;
+		const bookId = Number.parseInt(req.params.bookId);
 
-	const book = await bookService.updateBook(bookId, bookUpdateData);
-	res.status(204).json(book);
+		const book = await bookService.updateBook(bookId, bookUpdateData);
+		res.status(204).json(book);
+	} catch (error) {
+		res.status(404).json({ message: (error as Error).message });
+	};
 };
 
 export const deleteBook = async (req: Request, res: Response) => {

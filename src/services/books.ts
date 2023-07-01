@@ -21,11 +21,15 @@ export const saveBook = async (book: Book) => {
 };
 
 export const updateBook = async (bookId: number, book: Book) => {
-	return Book.update(book, {
+	const result = await Book.update(book, {
 		where: {
 			bookId,
 		},
 	});
+
+	if (result[0] === 0) {
+		throw new Error(`Unable to update book ID:${bookId}.`);
+	} else return result;
 };
 
 export const deleteBook = async (bookId: number) => {
