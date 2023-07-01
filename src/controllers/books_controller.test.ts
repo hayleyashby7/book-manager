@@ -80,17 +80,16 @@ describe("GET /api/v1/books/{bookId} endpoint", () => {
 	test("status code successfully 404 for a book that is not found", async () => {
 		// Arrange
 
-		jest
-			.spyOn(bookService, "getBook")
-			// this is a weird looking type assertion!
-			// it's necessary because TS knows we can't actually return unknown here
-			// BUT we want to check that in the event a book is missing we return a 404
-			.mockResolvedValue(undefined as unknown as Book);
+		jest.spyOn(bookService, "getBook").mockImplementation(() => {
+			throw new Error("No book found with ID: 77");
+		});
+
 		// Act
 		const res = await request(app).get("/api/v1/books/77");
 
 		// Assert
 		expect(res.statusCode).toEqual(404);
+		expect(res.body).toEqual({ message: "No book found with ID: 77" });
 	});
 
 	test("controller successfully returns book object as JSON", async () => {
@@ -116,8 +115,6 @@ describe("POST /api/v1/books endpoint", () => {
 			author: "Roald Dahl",
 			description: "A fox is fantastic",
 		});
-
-		jest.spyOn(bookService, "getBook").mockResolvedValue(Promise.resolve(null));
 
 		jest
 			.spyOn(bookService, "saveBook")

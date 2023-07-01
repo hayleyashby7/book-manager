@@ -1,3 +1,4 @@
+import e from "express";
 import { Book } from "../models/book";
 
 export const getBooks = async () => {
@@ -5,9 +6,13 @@ export const getBooks = async () => {
 };
 
 export const getBook = async (bookId: number) => {
-	return Book.findOne({
+	const book = await Book.findOne({
 		where: { bookId },
 	});
+
+	if (!book) {
+		throw new Error(`No book found with ID: ${bookId}`);
+	} else return book;
 };
 
 export const saveBook = async (book: Book) => {
