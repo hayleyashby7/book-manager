@@ -190,3 +190,59 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
 	});
 });
+
+describe("PUT /api/v1/books/{bookId} endpoint", () => {
+	test("status code 204 for successfully updating a book", async () => {
+		// Arrange
+		const bookToUpdate = {
+			bookId: 1,
+			title: "The Hobbit",
+			author: "J. R. R. Tolkien",
+			description:
+				"Fantasy tale about succumbing to peer pressure and biting off more than you can chew.",
+		};
+
+		jest
+			.spyOn(bookService, "updateBook")
+			.mockResolvedValue(Promise.resolve([1]));
+
+		// Act
+		const res = await request(app).put("/api/v1/books/1").send(bookToUpdate);
+
+		// Assert
+		expect(res.statusCode).toEqual(204);
+		expect(jest.spyOn(bookService, "updateBook")).toHaveBeenCalledWith(
+			1,
+			bookToUpdate
+		);
+		expect(jest.spyOn(bookService, "updateBook")).toHaveBeenCalledTimes(1);
+	});
+
+	test("status code 404 for updating a book that doesn't exist", async () => {
+		// Arrange
+		const bookToUpdate = {
+			bookId: 7,
+			title: "The Hobbit",
+			author: "J. R. R. Tolkien",
+			description:
+				"Fantasy tale about succumbing to peer pressure and biting off more than you can chew.",
+		};
+		jest.spyOn(bookService, "updateBook").mockImplementation(() => {
+			throw new Error(`Unable to update book ID:${bookToUpdate.bookId}.`);
+		});
+
+		// Act
+		const res = await request(app).put("/api/v1/books/7").send(bookToUpdate);
+
+		// Assert
+		expect(res.statusCode).toEqual(404);
+		expect(res.body).toEqual({
+			message: `Unable to update book ID:${bookToUpdate.bookId}.`,
+		});
+		expect(jest.spyOn(bookService, "updateBook")).toHaveBeenCalledWith(
+			7,
+			bookToUpdate
+		);
+		expect(jest.spyOn(bookService, "updateBook")).toHaveBeenCalledTimes(1);
+	});
+});
