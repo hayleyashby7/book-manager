@@ -147,4 +147,17 @@ describe("DELETE /api/v1/books/{bookId} endpoint", () => {
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledWith(2);
 		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
 	});
+
+		test("status code 404 for deleting a book that doesn't exist", async () => {
+		// Arrange
+		jest.spyOn(bookService, "deleteBook").mockResolvedValue(Promise.resolve(0));
+
+		// Act
+		const res = await request(app).delete("/api/v1/books/12");
+
+		// Assert
+		expect(res.statusCode).toEqual(404);
+		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledWith(12);
+		expect(jest.spyOn(bookService, "deleteBook")).toHaveBeenCalledTimes(1);
+	});
 });

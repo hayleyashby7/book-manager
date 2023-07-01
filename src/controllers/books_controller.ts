@@ -38,6 +38,16 @@ export const updateBook = async (req: Request, res: Response) => {
 export const deleteBook = async (req: Request, res: Response) => {
 	const bookId = Number.parseInt(req.params.bookId);
 
-	await bookService.deleteBook(bookId);
-	res.status(204).json();
+	try {
+		performDelete(await bookService.deleteBook(bookId));
+		res.status(204).json();
+	} catch (error) {
+		res.status(404).json({ message: (error as Error).message });
+	}
+};
+
+const performDelete = (numberBooks: number) => {
+	if (numberBooks === 0) {
+		throw new Error("Book not found");
+	}
 };
