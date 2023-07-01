@@ -11,6 +11,7 @@ export const getBook = async (bookId: number) => {
 };
 
 export const saveBook = async (book: Book) => {
+	await preSaveChecks(book);
 	return Book.create<Book>(book);
 };
 
@@ -23,9 +24,21 @@ export const updateBook = async (bookId: number, book: Book) => {
 };
 
 export const deleteBook = async (bookId: number) => {
-	return Book.destroy({
+	const result = await Book.destroy({
 		where: {
 			bookId,
 		},
 	});
+
+	if (result === 0) {
+		throw new Error(`Unable to delete book ID:${bookId} as it does not exist.`);
+	} else return result;
+};
+
+const preSaveChecks = async (book: any) => {
+	const bookExists = await getBook(book.bookId);
+
+	if (bookExists) {
+		throw new Error("Book ID already exists");
+	}
 };
