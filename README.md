@@ -3,6 +3,7 @@
 ## Introduction
 
 This is the starter repository for the Further APIs session. It provides a start to creating a Minimalist Book Manager API.
+Cloned from https://github.com/techreturners/lm-code-book-manager-api-ts
 
 ### Pre-Requisites
 
