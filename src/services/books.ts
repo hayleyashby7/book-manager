@@ -44,7 +44,9 @@ export const deleteBook = async (bookId: number) => {
 };
 
 const preSaveChecks = async (book: any) => {
-	const bookExists = await getBook(book.bookId);
+	const bookExists = await Book.findOne({
+		where: { bookId: book.bookId },
+	});
 
 	if (bookExists) {
 		throw new Error("Book ID already exists");
